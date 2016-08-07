@@ -25,7 +25,7 @@ public class Counter {
         label = new JLabel("You've clicked me 0 times.     ");
         label.setName(getComponentName("label"));
 
-        // TODO Replace anonymous class with lambda.
+        // TODO Replace anonymous class with method reference.
         button.addActionListener(
                 new ActionListener() {
                     @Override
