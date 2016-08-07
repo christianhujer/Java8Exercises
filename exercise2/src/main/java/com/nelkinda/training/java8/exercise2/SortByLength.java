@@ -13,6 +13,7 @@ public class SortByLength {
     public static void main(final String... args) throws IOException {
         try (final BufferedReader in = new BufferedReader(new InputStreamReader(System.in))) {
             final List<String> lines = readLines(in);
+            // TODO Replace anonymous class with lambda.
             sort(lines, new Comparator<String>() {
                 @Override public int compare(final String o1, final String o2) {
                     int comparisonResult = ((Integer) o1.length()).compareTo(o2.length());
