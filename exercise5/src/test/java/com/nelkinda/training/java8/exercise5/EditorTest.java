@@ -6,8 +6,7 @@ import org.junit.runner.RunWith;
 
 @CucumberOptions(
         features = { "src/test/resources/features/" },
-        glue = { "com.nelkinda.training.java8.exercise5" },
-        tags = { "@wip" }
+        glue = { "com.nelkinda.training.java8.exercise5" }
 )
 @RunWith(Cucumber.class)
 public class EditorTest {
