@@ -26,6 +26,7 @@
         <module name="exercise2" />
         <module name="exercise3" />
         <module name="exercise4" />
+        <module name="exercise5" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -33,6 +34,7 @@
       <module name="exercise2" target="1.8" />
       <module name="exercise3" target="1.8" />
       <module name="exercise4" target="1.8" />
+      <module name="exercise5" target="1.8" />
       <module name="java8-exercises" target="1.8" />
     </bytecodeTargetLevel>
   </component>

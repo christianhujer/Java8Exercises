@@ -12,6 +12,7 @@
         <module>exercise2</module>
         <module>exercise3</module>
         <module>exercise4</module>
+        <module>exercise5</module>
     </modules>
 
     <properties>
@@ -33,6 +34,18 @@
         </plugins>
     </build>
     <dependencies>
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>1.1.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>info.cukes</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>1.1.8</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
