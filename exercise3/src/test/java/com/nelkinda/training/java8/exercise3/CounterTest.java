@@ -5,6 +5,7 @@ import org.junit.Test;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 
+import static com.nelkinda.training.java8.exercise3.ComponentFinder.findComponent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -13,7 +14,7 @@ public class CounterTest {
     public void givenCounter_whenClickingButton_thenIncrements() throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         // Given
         final Counter counter = new Counter();
-        final AbstractButton button = (AbstractButton) ComponentFinder.findComponent(counter.getComponentName("Button"));
+        final AbstractButton button = (AbstractButton) findComponent(counter.getComponentName("Button"));
 
         // Then
         assertNotNull(button);

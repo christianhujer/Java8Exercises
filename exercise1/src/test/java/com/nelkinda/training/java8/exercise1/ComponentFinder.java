@@ -2,12 +2,15 @@ package com.nelkinda.training.java8.exercise1;
 
 import java.awt.*;
 
-enum ComponentFinder {;
+import static java.awt.Window.getOwnerlessWindows;
+
+enum ComponentFinder {
+    ;
 
     private static Container ownerlessWindowsContainer = new Container() {
         @Override
         public Component[] getComponents() {
-            return Window.getOwnerlessWindows();
+            return getOwnerlessWindows();
         }
     };
 
