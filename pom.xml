@@ -9,11 +9,12 @@
 
     <modules>
         <module>exercise1</module>
+        <module>exercise2</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<jdk.version>1.8</jdk.version>
+        <jdk.version>1.8</jdk.version>
     </properties>
 
     <build>

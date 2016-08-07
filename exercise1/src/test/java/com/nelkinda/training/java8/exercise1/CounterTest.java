@@ -13,7 +13,7 @@ public class CounterTest {
     public void givenCounter_whenClickingButton_thenIncrements() throws NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         // Given
         final Counter counter = new Counter();
-        final AbstractButton button = (AbstractButton) Counter.findComponent(counter.getComponentName("Button"));
+        final AbstractButton button = (AbstractButton) ComponentFinder.findComponent(counter.getComponentName("Button"));
 
         // Then
         assertNotNull(button);
