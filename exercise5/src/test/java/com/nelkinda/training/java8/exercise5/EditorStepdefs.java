@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static javax.swing.SwingUtilities.invokeAndWait;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -38,7 +39,7 @@ public class EditorStepdefs {
 
     @Given("^I have just started the editor[,.]?$")
     public void iHaveJustStartedTheEditor() throws InvocationTargetException, InterruptedException {
-        SwingUtilities.invokeAndWait(
+        invokeAndWait(
                 new Runnable() {
                     @Override public void run() {
                         editor = new Editor();
@@ -69,20 +70,30 @@ public class EditorStepdefs {
 
     @When("^I action \"([^\"]*)\"[,.]?$")
     public void iAction(final String actionCommand) {
-        SwingUtilities.invokeLater(() -> editor.getActions().get(actionCommand).actionPerformed(null));
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override public void run() {
+                editor.getActions().get(actionCommand).actionPerformed(null);
+            }
+        });
     }
 
     @When("^I wait for action \"([^\"]*)\"[,.]?$")
     public void iWaitForAction(final String actionCommand) throws InvocationTargetException, InterruptedException {
-        SwingUtilities.invokeAndWait(() -> editor.getActions().get(actionCommand).actionPerformed(null));
+        invokeAndWait(new Runnable() {
+            @Override public void run() {
+                editor.getActions().get(actionCommand).actionPerformed(null);
+            }
+        });
     }
 
     @When("^I enter the filename \"([^\"]*)\"[,.]?$")
     public void iEnterTheFilename(final String filename) throws Throwable {
         final File file = new File(filename);
-        SwingUtilities.invokeAndWait(() -> {
-            editor.fileChooser.setSelectedFile(file);
-            editor.fileChooser.approveSelection();
+        invokeAndWait(new Runnable() {
+            @Override public void run() {
+                editor.fileChooser.setSelectedFile(file);
+                editor.fileChooser.approveSelection();
+            }
         });
     }
 
@@ -117,8 +128,13 @@ public class EditorStepdefs {
 
     @Then("^I must be asked for a filename[,.]?$")
     public void iAmAskedForAFilename() throws Throwable {
-        Thread.sleep(100);
-        assertTrue(editor.fileChooser.isShowing());
+        final boolean[] isShowing = new boolean[1];
+        invokeAndWait(new Runnable() {
+            @Override public void run() {
+                isShowing[0] = editor.fileChooser.isShowing();
+            }
+        });
+        assertTrue(isShowing[0]);
     }
 
     @Then("^I must not be asked for a filename[,.]?$")
