@@ -37,9 +37,15 @@ public class EditorStepdefs {
     }
 
     @Given("^I have just started the editor[,.]?$")
-    public void iHaveJustStartedTheEditor() {
-        editor = new Editor();
-        editorComponent = findComponent(editor.getWindow(), JTextComponent.class);
+    public void iHaveJustStartedTheEditor() throws InvocationTargetException, InterruptedException {
+        SwingUtilities.invokeAndWait(
+                new Runnable() {
+                    @Override public void run() {
+                        editor = new Editor();
+                        editorComponent = findComponent(editor.getWindow(), JTextComponent.class);
+                    }
+                }
+        );
         assertNotNull(editorComponent);
     }
 

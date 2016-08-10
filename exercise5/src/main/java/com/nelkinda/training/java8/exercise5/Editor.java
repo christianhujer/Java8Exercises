@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,6 +90,7 @@ public class Editor {
         frame.getContentPane().add(createJToolBar(), NORTH);
         frame.getContentPane().add(new JScrollPane(editorPane));
         frame.pack();
+        frame.setVisible(true);
     }
 
     private static ImageIcon getImageIcon(final String url) {
@@ -96,9 +98,15 @@ public class Editor {
         return resource != null ? new ImageIcon(resource) : null;
     }
 
-    public static void main(final String... args) {
-        setLookAndFeelFromName("Nimbus");
-        new Editor().frame.setVisible(true);
+    public static void main(final String... args) throws InvocationTargetException, InterruptedException {
+        invokeAndWait(
+                new Runnable() {
+                    @Override public void run() {
+                        setLookAndFeelFromName("Nimbus");
+                        new Editor();
+                    }
+                }
+        );
     }
 
     private static void setLookAndFeelFromName(final String lookAndFeelName) {
