@@ -38,6 +38,7 @@ public class EditorStepdefs {
 
     @Given("^I have just started the editor[,.]?$")
     public void iHaveJustStartedTheEditor() throws InvocationTargetException, InterruptedException {
+        // TODO Replace with lambda or method reference
         invokeAndWait(new Runnable() {
             @Override public void run() {
                 editor = new Editor();
@@ -55,6 +56,7 @@ public class EditorStepdefs {
 
     @When("^I action \"([^\"]*)\"[,.]?$")
     public void iAction(final String actionCommand) {
+        // TODO Replace with lambda or method reference
         invokeLater(new Runnable() {
             @Override public void run() {
                 editor.getActions().get(actionCommand)
@@ -65,6 +67,7 @@ public class EditorStepdefs {
 
     @When("^I wait for action \"([^\"]*)\"[,.]?$")
     public void iWaitForAction(final String actionCommand) throws InvocationTargetException, InterruptedException {
+        // TODO Replace with lambda or method reference
         invokeAndWait(new Runnable() {
             @Override public void run() {
                 editor.getActions().get(actionCommand)
@@ -76,6 +79,7 @@ public class EditorStepdefs {
     @When("^I enter the filename \"([^\"]*)\"[,.]?$")
     public void iEnterTheFilename(final String filename) throws Throwable {
         final File file = new File(filename);
+        // TODO Replace with lambda or method reference
         invokeAndWait(new Runnable() {
             @Override public void run() {
                 editor.fileChooser.setSelectedFile(file);
@@ -109,6 +113,7 @@ public class EditorStepdefs {
     @Then("^I must be asked for a filename[,.]?$")
     public void iAmAskedForAFilename() throws Throwable {
         final boolean[] isShowing = new boolean[1];
+        // TODO Replace with lambda or method reference
         invokeAndWait(new Runnable() {
             @Override public void run() {
                 isShowing[0] = editor.fileChooser.isShowing();
