@@ -1,8 +1,6 @@
 package com.nelkinda.training.java8.exercise5;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.After;
-import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -12,19 +10,10 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-import static java.awt.Toolkit.getDefaultToolkit;
-import static java.nio.file.Files.readAllBytes;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static org.junit.Assert.assertEquals;
@@ -56,18 +45,6 @@ public class EditorStepdefs {
             }
         });
         assertNotNull(editorComponent);
-    }
-
-    @Given("^the file \"([^\"]*)\" has the following content:$")
-    public void theFileHasTheFollowingContent(final String filename, final String content) throws IOException {
-        Files.write(Paths.get(filename), content.getBytes("UTF-8"));
-    }
-
-    @Given("^the file \"([^\"]*)\" does not exist[,.]?$")
-    public void theFileDoesNotExist(final String filename) {
-        final File file = new File(filename);
-        if (file.exists())
-            assertTrue(file.delete());
     }
 
     @When("^I enter the text \"([^\"]*)\"[,.]?$")
@@ -129,13 +106,6 @@ public class EditorStepdefs {
         assertEquals(expectedDocumentText, editorComponent.getText());
     }
 
-    @Then("^the file \"([^\"]*)\" must have the following content:$")
-    public void theFileMustHaveTheFollowingContent(final String filename, final String expectedContent)
-            throws IOException {
-        final String actualContent = new String(readAllBytes(Paths.get(filename)), "UTF-8");
-        assertEquals(expectedContent, actualContent);
-    }
-
     @Then("^I must be asked for a filename[,.]?$")
     public void iAmAskedForAFilename() throws Throwable {
         final boolean[] isShowing = new boolean[1];
@@ -152,11 +122,9 @@ public class EditorStepdefs {
         assertFalse(editor.fileChooser.isShowing());
     }
 
-    @Given("^the system clipboard is empty[,.]?$")
-    public void theSystemClipboardIsEmpty() throws Throwable {
-        final Clipboard clipboard = getDefaultToolkit().getSystemClipboard();
-        final StringSelection stringSelection = new StringSelection("");
-        clipboard.setContents(stringSelection, stringSelection);
+    @When("^I set the caret to position (\\d+)[,.]?$")
+    public void iSetTheCursorToPosition(final int caretPosition) throws Throwable {
+        editorComponent.setCaretPosition(caretPosition);
     }
 
     @When("^I mark from position (\\d+) to position (\\d+),$")
@@ -164,29 +132,8 @@ public class EditorStepdefs {
         editorComponent.select(start, end);
     }
 
-    @Then("^the system clipboard must contain the text \"([^\"]*)\"[,.]?$")
-    public void theSystemClipboardMustContainTheText(final String expectedClipboardContent) throws Throwable {
-        final Clipboard clipboard = getDefaultToolkit().getSystemClipboard();
-        final Transferable transferable = clipboard.getContents(null);
-        assertNotNull(transferable);
-        final String contents = (String) transferable.getTransferData(DataFlavor.stringFlavor);
-        assertEquals(expectedClipboardContent, contents);
-    }
-
     @After
     public void closeTheEditor() {
         editor.quit(null);
-    }
-
-    @And("^the system clipboard contains \"([^\"]*)\"[,.]?$")
-    public void theSystemClipboardContains(final String clipboardText) throws Throwable {
-        final Clipboard clipboard = getDefaultToolkit().getSystemClipboard();
-        final StringSelection stringSelection = new StringSelection(clipboardText);
-        clipboard.setContents(stringSelection, stringSelection);
-    }
-
-    @When("^I set the caret to position (\\d+)[,.]?$")
-    public void iSetTheCursorToPosition(final int caretPosition) throws Throwable {
-        editorComponent.setCaretPosition(caretPosition);
     }
 }
