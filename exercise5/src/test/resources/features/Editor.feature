@@ -1,6 +1,6 @@
 Feature: Editor
 
-  Scenario: As a <User>, I want to <start the editor> in order to <use it>.
+  Scenario: As a <User>, I want to <start the editor> in order to <use it>
     Given I have just started the editor,
     Then the document name must be "<Unnamed>",
     And the document must have the following content:
@@ -8,7 +8,7 @@ Feature: Editor
       """
     And the window title must be "Editor: <Unnamed>".
 
-  Scenario: As a <User>, I want to <enter text> in order to <create and edit content which is textual data>.
+  Scenario: As a <User>, I want to <enter text> in order to <create and edit content which is textual data>
     Given I have just started the editor,
     When I enter the text "foo",
     Then the document must have the following content:
@@ -16,7 +16,7 @@ Feature: Editor
       foo
       """
 
-  Scenario: As a <User>, I want to <create a new file> in order to <create new content from scratch>.
+  Scenario: As a <User>, I want to <create a new file> in order to <create new content from scratch>
     Given I have just started the editor,
     And I enter the text "foo",
     When I wait for action "new",
@@ -26,7 +26,7 @@ Feature: Editor
     And the document name must be "<Unnamed>",
     And the window title must be "Editor: <Unnamed>".
 
-  Scenario: As a <User>, I want to <save a file> in order to <persist my work>.
+  Scenario: As a <User>, I want to <save a file> in order to <persist my work>
     Given I have just started the editor,
     And the file "foo.txt" does not exist,
     And I enter the text "This is some text.",
@@ -48,7 +48,7 @@ Feature: Editor
       This is some text. This is some more text.
       """
 
-  Scenario: As a <User>, I want to <load a file> in order to <continue my work>.
+  Scenario: As a <User>, I want to <load a file> in order to <continue my work>
     Given I have just started the editor,
     And the file "foo.txt" has the following content:
       """
@@ -64,7 +64,7 @@ Feature: Editor
       """
     And the document name must be "foo.txt".
 
-  Scenario: As a <User>, I want to <save a file under a new name> in order to <create derived work>.
+  Scenario: As a <User>, I want to <save a file under a new name> in order to <create derived work>
     Given I have just started the editor,
     And the file "bar.txt" does not exist,
     And the file "foo.txt" has the following content:
@@ -82,4 +82,35 @@ Feature: Editor
     Then the file "bar.txt" must have the following content:
       """
       Hello, World!
+      """
+
+  Scenario: As a <User>, I want to <copy text via the clipboard> in order to <reuse text>
+    Given I have just started the editor,
+    And the system clipboard is empty,
+    And I enter the text "It's a fine day today.",
+    When I mark from position 7 to position 12,
+    And I wait for action "copy-to-clipboard",
+    Then the system clipboard must contain the text "fine ".
+
+  Scenario: As a <User>, I want to <cut text via the system clipboard> in order to <move text>
+    Given I have just started the editor,
+    And the system clipboard is empty,
+    And I enter the text "It's a fine day today.",
+    When I mark from position 7 to position 12,
+    And I wait for action "cut-to-clipboard",
+    Then the document must have the following content:
+      """
+      It's a day today.
+      """
+    Then the system clipboard must contain the text "fine ".
+
+  Scenario: As a <User>, I want to <paste text via the system clipboard> in order to <reuse text>
+    Given I have just started the editor,
+    And the system clipboard contains "fine ",
+    And I enter the text "It's a day today.",
+    When I set the caret to position 7,
+    And I wait for action "paste-from-clipboard",
+    Then the document must have the following content:
+      """
+      It's a fine day today.
       """

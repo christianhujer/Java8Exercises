@@ -1,6 +1,8 @@
 package com.nelkinda.training.java8.exercise5;
 
+import cucumber.api.PendingException;
 import cucumber.api.java.After;
+import cucumber.api.java.en.And;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
@@ -10,13 +12,21 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import static java.awt.Toolkit.getDefaultToolkit;
+import static java.nio.file.Files.readAllBytes;
 import static javax.swing.SwingUtilities.invokeAndWait;
+import static javax.swing.SwingUtilities.invokeLater;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -39,14 +49,12 @@ public class EditorStepdefs {
 
     @Given("^I have just started the editor[,.]?$")
     public void iHaveJustStartedTheEditor() throws InvocationTargetException, InterruptedException {
-        invokeAndWait(
-                new Runnable() {
-                    @Override public void run() {
-                        editor = new Editor();
-                        editorComponent = findComponent(editor.getWindow(), JTextComponent.class);
-                    }
-                }
-        );
+        invokeAndWait(new Runnable() {
+            @Override public void run() {
+                editor = new Editor();
+                editorComponent = findComponent(editor.getWindow(), JTextComponent.class);
+            }
+        });
         assertNotNull(editorComponent);
     }
 
@@ -70,9 +78,10 @@ public class EditorStepdefs {
 
     @When("^I action \"([^\"]*)\"[,.]?$")
     public void iAction(final String actionCommand) {
-        SwingUtilities.invokeLater(new Runnable() {
+        invokeLater(new Runnable() {
             @Override public void run() {
-                editor.getActions().get(actionCommand).actionPerformed(null);
+                editor.getActions().get(actionCommand)
+                        .actionPerformed(new ActionEvent(editorComponent, 0, actionCommand));
             }
         });
     }
@@ -81,7 +90,8 @@ public class EditorStepdefs {
     public void iWaitForAction(final String actionCommand) throws InvocationTargetException, InterruptedException {
         invokeAndWait(new Runnable() {
             @Override public void run() {
-                editor.getActions().get(actionCommand).actionPerformed(null);
+                editor.getActions().get(actionCommand)
+                        .actionPerformed(new ActionEvent(editorComponent, 0, actionCommand));
             }
         });
     }
@@ -122,7 +132,7 @@ public class EditorStepdefs {
     @Then("^the file \"([^\"]*)\" must have the following content:$")
     public void theFileMustHaveTheFollowingContent(final String filename, final String expectedContent)
             throws IOException {
-        final String actualContent = new String(Files.readAllBytes(Paths.get(filename)), "UTF-8");
+        final String actualContent = new String(readAllBytes(Paths.get(filename)), "UTF-8");
         assertEquals(expectedContent, actualContent);
     }
 
@@ -142,8 +152,41 @@ public class EditorStepdefs {
         assertFalse(editor.fileChooser.isShowing());
     }
 
+    @Given("^the system clipboard is empty[,.]?$")
+    public void theSystemClipboardIsEmpty() throws Throwable {
+        final Clipboard clipboard = getDefaultToolkit().getSystemClipboard();
+        final StringSelection stringSelection = new StringSelection("");
+        clipboard.setContents(stringSelection, stringSelection);
+    }
+
+    @When("^I mark from position (\\d+) to position (\\d+),$")
+    public void iMarkFromPositionToPosition(final int start, final int end) throws Throwable {
+        editorComponent.select(start, end);
+    }
+
+    @Then("^the system clipboard must contain the text \"([^\"]*)\"[,.]?$")
+    public void theSystemClipboardMustContainTheText(final String expectedClipboardContent) throws Throwable {
+        final Clipboard clipboard = getDefaultToolkit().getSystemClipboard();
+        final Transferable transferable = clipboard.getContents(null);
+        assertNotNull(transferable);
+        final String contents = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+        assertEquals(expectedClipboardContent, contents);
+    }
+
     @After
     public void closeTheEditor() {
         editor.quit(null);
+    }
+
+    @And("^the system clipboard contains \"([^\"]*)\"[,.]?$")
+    public void theSystemClipboardContains(final String clipboardText) throws Throwable {
+        final Clipboard clipboard = getDefaultToolkit().getSystemClipboard();
+        final StringSelection stringSelection = new StringSelection(clipboardText);
+        clipboard.setContents(stringSelection, stringSelection);
+    }
+
+    @When("^I set the caret to position (\\d+)[,.]?$")
+    public void iSetTheCursorToPosition(final int caretPosition) throws Throwable {
+        editorComponent.setCaretPosition(caretPosition);
     }
 }

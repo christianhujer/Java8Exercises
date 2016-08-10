@@ -1,6 +1,7 @@
 package com.nelkinda.training.java8.exercise5;
 
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -176,10 +177,13 @@ public class Editor {
                 quit(e);
             }
         });
+        createAction("cut-to-clipboard", new DefaultEditorKit.CutAction());
+        createAction("copy-to-clipboard", new DefaultEditorKit.CopyAction());
+        createAction("paste-from-clipboard", new DefaultEditorKit.PasteAction());
     }
 
     private Action createAction(final String actionCommand, final ActionListener actionListener) {
-        final Action action = new AbstractAction() {
+        final Action action = actionListener instanceof Action ? (Action) actionListener : new AbstractAction() {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 actionListener.actionPerformed(e);
@@ -202,6 +206,16 @@ public class Editor {
         for (final String actionCommand : "new open save saveAs - quit".split("\\s+"))
             if ("-".equals(actionCommand) || "|".equals(actionCommand)) file.addSeparator();
             else file.add(actions.get(actionCommand));
+
+        final JMenu edit = new JMenu(createAction("edit", new ActionListener() {
+            @Override public void actionPerformed(final ActionEvent e) {
+                dummy(e);
+            }
+        }));
+        menuBar.add(edit);
+        for (final String actionCommand: "cut-to-clipboard copy-to-clipboard paste-from-clipboard".split("\\s+"))
+            if ("-".equals(actionCommand) || "|".equals(actionCommand)) file.addSeparator();
+            else edit.add(actions.get(actionCommand));
 
         // TODO Replace with lambda or method reference
         final JMenu lookAndFeel = new JMenu(createAction("lookAndFeel", new ActionListener() {
