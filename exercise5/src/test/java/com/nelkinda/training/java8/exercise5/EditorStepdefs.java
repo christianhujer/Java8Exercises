@@ -92,7 +92,6 @@ public class EditorStepdefs {
     public void iWaitForIOToBeCompleted() throws Throwable {
         final SwingWorker lastWorker = editor.getLastWorker();
         lastWorker.get();
-        lastWorker.get();
     }
 
     @Then("^the document name must be \"([^\"]*)\"[,.]?$")
