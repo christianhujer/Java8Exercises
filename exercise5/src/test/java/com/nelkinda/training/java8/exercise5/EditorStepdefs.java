@@ -145,6 +145,6 @@ public class EditorStepdefs {
 
     @After
     public void closeTheEditor() {
-        editor.quit(null);
+        iAction("quit");
     }
 }

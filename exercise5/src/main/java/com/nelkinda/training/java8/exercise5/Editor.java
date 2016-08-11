@@ -279,7 +279,7 @@ public class Editor {
         }
     }
 
-    void quit(final ActionEvent e) {
+    private void quit(final ActionEvent e) {
         frame.dispose();
     }
 
