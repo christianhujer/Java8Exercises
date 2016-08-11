@@ -246,8 +246,8 @@ public class Editor {
         try {
             setLookAndFeel(className);
             updateComponentTreeUI(frame);
-        } catch (final IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException | ClassNotFoundException e1) {
-            e1.printStackTrace();
+        } catch (final IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException | ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -262,25 +262,20 @@ public class Editor {
         final int returnValue = fileChooser.showOpenDialog(frame);
         switch (returnValue) {
         case APPROVE_OPTION:
-            setLastWorker(new Loader(fileChooser.getSelectedFile()));
-            lastWorker.execute();
+            runWorker(new Loader(fileChooser.getSelectedFile()));
         }
     }
 
     private void save(final ActionEvent e) {
         if (file == null) saveAs(e);
-        else {
-            setLastWorker(new Saver(file));
-            lastWorker.execute();
-        }
+        else runWorker(new Saver(file));
     }
 
     private void saveAs(final ActionEvent e) {
         final int returnValue = fileChooser.showSaveDialog(frame);
         switch (returnValue) {
         case APPROVE_OPTION:
-            setLastWorker(new Saver(fileChooser.getSelectedFile()));
-            lastWorker.execute();
+            runWorker(new Saver(fileChooser.getSelectedFile()));
         }
     }
 
@@ -314,8 +309,9 @@ public class Editor {
         return lastWorker;
     }
 
-    private synchronized void setLastWorker(final SwingWorker lastWorker) {
+    private synchronized void runWorker(final SwingWorker lastWorker) {
         this.lastWorker = lastWorker;
+        lastWorker.execute();
         notify();
     }
 
