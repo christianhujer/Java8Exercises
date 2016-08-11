@@ -94,6 +94,13 @@ public class EditorStepdefs {
         lastWorker.get();
     }
 
+    @Then("^the editor has focus[,.]?$")
+    public void theEditorHasFocus() throws Throwable {
+        // TODO:2016-08-11:hujerc:Replace this delay with a FocusListener.
+        Thread.sleep(100);
+        assertTrue(editorComponent.hasFocus());
+    }
+
     @Then("^the document name must be \"([^\"]*)\"[,.]?$")
     public void theDocumentNameMustBe(final String expectedDocumentName) throws InterruptedException {
         assertEquals(expectedDocumentName, editor.getDocumentName());

@@ -2,6 +2,7 @@ package com.nelkinda.training.java8.exercise5;
 
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -88,8 +89,8 @@ public class Editor {
         createActions();
         editorPane = new JEditorPane();
         frame.setJMenuBar(createJMenuBar());
-        frame.getContentPane().add(createJToolBar(), NORTH);
         frame.getContentPane().add(new JScrollPane(editorPane));
+        frame.getContentPane().add(createJToolBar(), NORTH);
         frame.pack();
         frame.setVisible(true);
     }
@@ -140,9 +141,12 @@ public class Editor {
 
     private JToolBar createJToolBar() {
         final JToolBar toolBar = new JToolBar();
-        for (final String actionCommand : "new - open - save saveAs".split("\\s+"))
+        toolBar.setFocusable(false);
+        for (final String actionCommand : "new open save saveAs - cut-to-clipboard copy-to-clipboard paste-from-clipboard".split("\\s+"))
             if ("-".equals(actionCommand) || "|".equals(actionCommand)) toolBar.addSeparator();
             else toolBar.add(actions.get(actionCommand));
+        for (final Component c : toolBar.getComponents())
+            c.setFocusable(false);
         return toolBar;
     }
 

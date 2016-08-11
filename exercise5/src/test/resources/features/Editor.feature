@@ -5,6 +5,7 @@ Feature: Editor
 
   Scenario: As a <User>, I want to <start the editor> in order to <use it>
     Then the document name must be "<Unnamed>",
+    And the editor has focus,
     And the document must have the following content:
       """
       """
