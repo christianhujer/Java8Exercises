@@ -1,7 +1,11 @@
 package com.nelkinda.training.java8.exercise5;
 
 import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.Document;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,19 +79,27 @@ public class Editor {
         });
     }
 
-    private final JFrame frame;
-    private final JEditorPane editorPane;
+    final JFileChooser fileChooser = new JFileChooser();
+    private final JEditorPane editorPane = new JEditorPane();
+    private final UndoManager undoManager = new UndoManager();
     private final ActionMap actions = new ActionMap();
     private final ResourceBundle resourceBundle = getBundle(getClass().getName());
-    JFileChooser fileChooser = new JFileChooser();
     private String documentName = UNNAMED;
+    private final JFrame frame = new JFrame("Editor: " + documentName);
     private File file;
     private SwingWorker lastWorker;
 
     Editor() {
-        frame = new JFrame("Editor: " + documentName);
         createActions();
-        editorPane = new JEditorPane();
+        final Document document = editorPane.getDocument();
+        document.addUndoableEditListener(undoManager);
+        // TODO Replace with lambda or method reference
+        document.addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(final UndoableEditEvent e) {
+                updateUndoAndRedoStates();
+            }
+        });
         frame.setJMenuBar(createJMenuBar());
         frame.getContentPane().add(new JScrollPane(editorPane));
         frame.getContentPane().add(createJToolBar(), NORTH);
@@ -101,14 +113,13 @@ public class Editor {
     }
 
     public static void main(final String... args) throws InvocationTargetException, InterruptedException {
-        invokeAndWait(
-                new Runnable() {
-                    @Override public void run() {
-                        setLookAndFeelFromName("Nimbus");
-                        new Editor();
-                    }
-                }
-        );
+        // TODO Replace with lambda or method reference
+        invokeAndWait(new Runnable() {
+            @Override public void run() {
+                setLookAndFeelFromName("Nimbus");
+                new Editor();
+            }
+        });
     }
 
     private static void setLookAndFeelFromName(final String lookAndFeelName) {
@@ -139,10 +150,16 @@ public class Editor {
         }
     }
 
+    private void updateUndoAndRedoStates() {
+        ((UndoAction) actions.get("undo")).updateUndoState();
+        ((RedoAction) actions.get("redo")).updateRedoState();
+    }
+
     private JToolBar createJToolBar() {
         final JToolBar toolBar = new JToolBar();
         toolBar.setFocusable(false);
-        for (final String actionCommand : "new open save saveAs - cut-to-clipboard copy-to-clipboard paste-from-clipboard".split("\\s+"))
+        for (final String actionCommand : "new open save saveAs - cut-to-clipboard copy-to-clipboard paste-from-clipboard"
+                .split("\\s+"))
             if ("-".equals(actionCommand) || "|".equals(actionCommand)) toolBar.addSeparator();
             else toolBar.add(actions.get(actionCommand));
         for (final Component c : toolBar.getComponents())
@@ -184,6 +201,8 @@ public class Editor {
         createAction("cut-to-clipboard", new DefaultEditorKit.CutAction());
         createAction("copy-to-clipboard", new DefaultEditorKit.CopyAction());
         createAction("paste-from-clipboard", new DefaultEditorKit.PasteAction());
+        createAction("undo", new UndoAction());
+        createAction("redo", new RedoAction());
     }
 
     private Action createAction(final String actionCommand, final ActionListener actionListener) {
@@ -207,19 +226,16 @@ public class Editor {
             }
         }));
         menuBar.add(file);
-        for (final String actionCommand : "new open save saveAs - quit".split("\\s+"))
-            if ("-".equals(actionCommand) || "|".equals(actionCommand)) file.addSeparator();
-            else file.add(actions.get(actionCommand));
+        createMenu(file, "new open save saveAs - quit");
 
+        // TODO Replace with lambda or method reference
         final JMenu edit = new JMenu(createAction("edit", new ActionListener() {
             @Override public void actionPerformed(final ActionEvent e) {
                 dummy(e);
             }
         }));
         menuBar.add(edit);
-        for (final String actionCommand: "cut-to-clipboard copy-to-clipboard paste-from-clipboard".split("\\s+"))
-            if ("-".equals(actionCommand) || "|".equals(actionCommand)) file.addSeparator();
-            else edit.add(actions.get(actionCommand));
+        createMenu(edit, "undo redo | cut-to-clipboard copy-to-clipboard paste-from-clipboard");
 
         // TODO Replace with lambda or method reference
         final JMenu lookAndFeel = new JMenu(createAction("lookAndFeel", new ActionListener() {
@@ -240,6 +256,12 @@ public class Editor {
             lookAndFeel.add(action);
         }
         return menuBar;
+    }
+
+    private void createMenu(final JMenu menu, final String menuDescription) {
+        for (final String actionCommand : menuDescription.split("\\s+"))
+            if ("-".equals(actionCommand) || "|".equals(actionCommand)) menu.addSeparator();
+            else menu.add(actions.get(actionCommand));
     }
 
     private void setLookAndFeelFromClassName(final String className) {
@@ -352,6 +374,40 @@ public class Editor {
                 }
             });
             return null;
+        }
+    }
+
+    private class UndoAction extends AbstractAction {
+        UndoAction() {
+            setEnabled(false);
+        }
+
+        @Override public void actionPerformed(final ActionEvent e) {
+            undoManager.undo();
+            updateUndoAndRedoStates();
+        }
+
+        void updateUndoState() {
+            final boolean canUndo = undoManager.canUndo();
+            setEnabled(canUndo);
+            putValue(Action.NAME, canUndo ? undoManager.getUndoPresentationName() : "Undo");
+        }
+    }
+
+    private class RedoAction extends AbstractAction {
+        RedoAction() {
+            setEnabled(false);
+        }
+
+        @Override public void actionPerformed(final ActionEvent e) {
+            undoManager.redo();
+            updateUndoAndRedoStates();
+        }
+
+        void updateRedoState() {
+            final boolean canRedo = undoManager.canRedo();
+            setEnabled(canRedo);
+            putValue(Action.NAME, canRedo ? undoManager.getRedoPresentationName() : "Redo");
         }
     }
 }

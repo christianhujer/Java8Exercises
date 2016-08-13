@@ -109,3 +109,24 @@ Feature: Editor
       """
       It's a fine day today.
       """
+
+  Scenario: As a <User>, I want to <undo my last edit action> in order to <correct an accidental change>
+    Given I enter the text "It's a day today.",
+    When I set the caret to position 7,
+    And I enter the text "fine ",
+    And I wait for action "undo",
+    Then the document must have the following content:
+      """
+      It's a day today.
+      """
+
+  Scenario: As a <User>, I want to <redo my last undo action> in order to <correct an accidental undo>
+    Given I enter the text "It's a day today.",
+    When I set the caret to position 7,
+    And I enter the text "fine ",
+    And I wait for action "undo",
+    And I wait for action "redo",
+    Then the document must have the following content:
+      """
+      It's a fine day today.
+      """

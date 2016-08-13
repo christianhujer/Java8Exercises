@@ -49,9 +49,19 @@ public class EditorStepdefs {
     }
 
     @When("^I enter the text \"([^\"]*)\"[,.]?$")
-    public void iEnterTheText(final String text) throws BadLocationException {
-        final Document document = editorComponent.getDocument();
-        document.insertString(document.getLength(), text, null);
+    public void iEnterTheText(final String text)
+            throws BadLocationException, InvocationTargetException, InterruptedException {
+        // TODO Replace with lambda or method reference
+        invokeAndWait(new Runnable() {
+            @Override public void run() {
+                final Document document = editorComponent.getDocument();
+                try {
+                    document.insertString(editorComponent.getCaretPosition(), text, null);
+                } catch (final BadLocationException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
 
     @When("^I action \"([^\"]*)\"[,.]?$")
@@ -135,12 +145,22 @@ public class EditorStepdefs {
 
     @When("^I set the caret to position (\\d+)[,.]?$")
     public void iSetTheCursorToPosition(final int caretPosition) throws Throwable {
-        editorComponent.setCaretPosition(caretPosition);
+        // TODO Replace with lambda or method reference
+        invokeAndWait(new Runnable() {
+            @Override public void run() {
+                editorComponent.setCaretPosition(caretPosition);
+            }
+        });
     }
 
     @When("^I mark from position (\\d+) to position (\\d+),$")
     public void iMarkFromPositionToPosition(final int start, final int end) throws Throwable {
-        editorComponent.select(start, end);
+        // TODO Replace with lambda or method reference
+        invokeAndWait(new Runnable() {
+            @Override public void run() {
+                editorComponent.select(start, end);
+            }
+        });
     }
 
     @After
