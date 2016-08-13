@@ -89,7 +89,6 @@ public class Editor {
     Editor() {
         createActions();
         final Document document = editorPane.getDocument();
-        document.addUndoableEditListener(undoAndRedo.getUndoManager());
         document.addUndoableEditListener(undoAndRedo);
         frame.setJMenuBar(createJMenuBar());
         frame.getContentPane().add(new JScrollPane(editorPane));

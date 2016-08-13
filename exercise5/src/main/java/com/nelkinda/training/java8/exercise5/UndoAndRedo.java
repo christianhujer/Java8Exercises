@@ -8,26 +8,17 @@ import java.awt.event.ActionEvent;
 
 class UndoAndRedo implements UndoableEditListener {
     private final UndoManager undoManager = new UndoManager();
-    private final UndoAction undoAction;
-    private final RedoAction redoAction;
-
-    UndoAndRedo() {
-        undoAction = new UndoAction();
-        redoAction = new RedoAction();
-    }
-
-    UndoManager getUndoManager() {
-        return undoManager;
-    }
-
+    private final AbstractUndoRedoAction undoAction = new UndoAction();
+    private final AbstractUndoRedoAction redoAction = new RedoAction();
 
     @Override public void undoableEditHappened(final UndoableEditEvent e) {
+        undoManager.undoableEditHappened(e);
         updateUndoAndRedoStates();
     }
 
     private void updateUndoAndRedoStates() {
-        undoAction.updateUndoState();
-        redoAction.updateRedoState();
+        undoAction.updateState();
+        redoAction.updateState();
     }
 
     Action getUndoAction() {
@@ -38,34 +29,38 @@ class UndoAndRedo implements UndoableEditListener {
         return redoAction;
     }
 
-    private class RedoAction extends AbstractAction {
-        RedoAction() {
+    private abstract class AbstractUndoRedoAction extends AbstractAction {
+        AbstractUndoRedoAction() {
             setEnabled(false);
         }
 
-        @Override public void actionPerformed(final ActionEvent e) {
+        abstract void updateState();
+    }
+
+    private class RedoAction extends AbstractUndoRedoAction {
+        @Override
+        public void actionPerformed(final ActionEvent e) {
             undoManager.redo();
             updateUndoAndRedoStates();
         }
 
-        void updateRedoState() {
+        @Override
+        void updateState() {
             final boolean canRedo = undoManager.canRedo();
             setEnabled(canRedo);
             putValue(NAME, canRedo ? undoManager.getRedoPresentationName() : "Redo");
         }
     }
 
-    private class UndoAction extends AbstractAction {
-        UndoAction() {
-            setEnabled(false);
-        }
-
-        @Override public void actionPerformed(final ActionEvent e) {
+    private class UndoAction extends AbstractUndoRedoAction {
+        @Override
+        public void actionPerformed(final ActionEvent e) {
             undoManager.undo();
             updateUndoAndRedoStates();
         }
 
-        void updateUndoState() {
+        @Override
+        void updateState() {
             final boolean canUndo = undoManager.canUndo();
             setEnabled(canUndo);
             putValue(NAME, canUndo ? undoManager.getUndoPresentationName() : "Undo");
