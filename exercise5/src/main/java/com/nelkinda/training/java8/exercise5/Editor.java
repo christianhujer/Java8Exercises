@@ -158,7 +158,7 @@ public class Editor {
     private JToolBar createJToolBar() {
         final JToolBar toolBar = new JToolBar();
         toolBar.setFocusable(false);
-        for (final String actionCommand : "new open save saveAs - cut-to-clipboard copy-to-clipboard paste-from-clipboard"
+        for (final String actionCommand : "new open save saveAs - undo redo - cut-to-clipboard copy-to-clipboard paste-from-clipboard"
                 .split("\\s+"))
             if ("-".equals(actionCommand) || "|".equals(actionCommand)) toolBar.addSeparator();
             else toolBar.add(actions.get(actionCommand));
