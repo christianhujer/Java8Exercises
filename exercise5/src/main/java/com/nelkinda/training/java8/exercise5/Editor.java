@@ -263,6 +263,7 @@ public class Editor {
 
     private void newDocument(final ActionEvent e) {
         editorPane.setText("");
+        setFile(null);
     }
 
     private void open(final ActionEvent e) {
@@ -296,7 +297,10 @@ public class Editor {
 
     private void setFile(final File file) {
         this.file = file;
-        this.documentName = file.getName();
+        if (file != null)
+            documentName = file.getName();
+        else
+            documentName = "<Unnamed>";
         frame.setTitle("Editor: " + documentName);
     }
 

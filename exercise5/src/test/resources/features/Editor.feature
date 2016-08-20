@@ -39,6 +39,7 @@ Feature: Editor
       This is some text.
       """
     And the document name must be "foo.txt",
+    And the window title must be "Editor: foo.txt".
     When I enter the text " This is some more text.",
     When I action "save",
     Then I must not be asked for a filename,
@@ -47,6 +48,21 @@ Feature: Editor
       """
       This is some text. This is some more text.
       """
+    When I action "new",
+    Then the document must have the following content:
+      """
+      """
+    And the document name must be "<Unnamed>",
+    And the window title must be "Editor: <Unnamed>".
+    When I action "save",
+    Then I must be asked for a filename.
+    When I enter the filename "foo.txt",
+    And I wait for I/O to be completed,
+    Then the file "foo.txt" must have the following content:
+      """
+      """
+    And the document name must be "foo.txt",
+    And the window title must be "Editor: foo.txt".
 
   Scenario: As a <User>, I want to <load a file> in order to <continue my work>
     Given the file "foo.txt" has the following content:
