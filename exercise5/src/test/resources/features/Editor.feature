@@ -1,7 +1,6 @@
 Feature: Editor
-
   Background:
-    Given I have just started the editor,
+    Given I have just started the editor.
 
   Scenario: As a <User>, I want to <start the editor> in order to <use it>
     Then the document name must be "<Unnamed>",
@@ -48,7 +47,7 @@ Feature: Editor
       """
       This is some text. This is some more text.
       """
-    When I action "new",
+    When I wait for action "new",
     Then the document must have the following content:
       """
       """
