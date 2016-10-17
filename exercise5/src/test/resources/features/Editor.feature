@@ -145,3 +145,8 @@ Feature: Editor
       """
       It's a fine day today.
       """
+
+    Scenario: As a <User>, I want to <change the look and feel> in order to <satisfy my taste>
+      Given the current look and feel is the cross-platform look and feel,
+      When I set the look and feel to "Nimbus",
+      Then the look and feel must be "Nimbus".

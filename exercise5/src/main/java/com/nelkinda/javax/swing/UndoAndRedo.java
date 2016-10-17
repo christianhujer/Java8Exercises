@@ -1,4 +1,4 @@
-package com.nelkinda.training.java8.exercise5;
+package com.nelkinda.javax.swing;
 
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
@@ -6,7 +6,7 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoManager;
 import java.awt.event.ActionEvent;
 
-class UndoAndRedo implements UndoableEditListener {
+public class UndoAndRedo implements UndoableEditListener {
     private final UndoManager undoManager = new UndoManager();
     private final AbstractUndoRedoAction undoAction = new UndoAction();
     private final AbstractUndoRedoAction redoAction = new RedoAction();
@@ -21,11 +21,11 @@ class UndoAndRedo implements UndoableEditListener {
         redoAction.updateState();
     }
 
-    Action getUndoAction() {
+    public Action getUndoAction() {
         return undoAction;
     }
 
-    Action getRedoAction() {
+    public Action getRedoAction() {
         return redoAction;
     }
 
