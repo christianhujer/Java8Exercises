@@ -21,7 +21,6 @@ import javax.swing.SwingWorker;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.Document;
 
 import static com.nelkinda.javax.swing.SwingUtilities.initActionFromBundle;
 import static com.nelkinda.javax.swing.SwingUtilities.setLookAndFeelFromName;
@@ -50,8 +49,7 @@ public class Editor {
 
     Editor() {
         createActions();
-        final Document document = editorPane.getDocument();
-        document.addUndoableEditListener(undoAndRedo);
+        editorPane.getDocument().addUndoableEditListener(undoAndRedo);
         frame.setJMenuBar(createJMenuBar());
         frame.getContentPane().add(new JScrollPane(editorPane));
         frame.getContentPane().add(createJToolBar(), NORTH);
