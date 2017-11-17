@@ -38,12 +38,9 @@ public class EditorStepdefs {
     @Given("^I have just started the editor[,.]?$")
     public void iHaveJustStartedTheEditor() throws InvocationTargetException, InterruptedException {
         // TODO Replace with lambda or method reference
-        invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                editor = new Editor();
-                editorComponent = findComponent(editor.getWindow(), JTextComponent.class);
-            }
+        invokeAndWait(() -> {
+            editor = new Editor();
+            editorComponent = findComponent(editor.getWindow(), JTextComponent.class);
         });
         assertNotNull(editorComponent);
     }
@@ -52,15 +49,12 @@ public class EditorStepdefs {
     public void iEnterTheText(final String text)
             throws BadLocationException, InvocationTargetException, InterruptedException {
         // TODO Replace with lambda or method reference
-        invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                final Document document = editorComponent.getDocument();
-                try {
-                    document.insertString(editorComponent.getCaretPosition(), text, null);
-                } catch (final BadLocationException e) {
-                    throw new RuntimeException(e);
-                }
+        invokeAndWait(() -> {
+            final Document document = editorComponent.getDocument();
+            try {
+                document.insertString(editorComponent.getCaretPosition(), text, null);
+            } catch (final BadLocationException e) {
+                throw new RuntimeException(e);
             }
         });
     }
@@ -68,27 +62,21 @@ public class EditorStepdefs {
     @When("^I action \"([^\"]*)\"[,.]?$")
     public void iAction(final String actionCommand) throws InvocationTargetException, InterruptedException {
         // TODO Replace with lambda or method reference
-        invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                final ActionMap actions = editor.getActions();
-                final Action action = actions.get(actionCommand);
-                assertNotNull(action);
-                action.actionPerformed(new ActionEvent(editorComponent, 0, actionCommand));
-            }
+        invokeLater(() -> {
+            final ActionMap actions = editor.getActions();
+            final Action action = actions.get(actionCommand);
+            assertNotNull(action);
+            action.actionPerformed(new ActionEvent(editorComponent, 0, actionCommand));
         });
     }
 
     @When("^I wait for action \"([^\"]*)\"[,.]?$")
     public void iWaitForAction(final String actionCommand) throws InvocationTargetException, InterruptedException {
         // TODO Replace with lambda or method reference
-        invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                final Action action = editor.getActions().get(actionCommand);
-                assertNotNull(action);
-                action.actionPerformed(new ActionEvent(editorComponent, 0, actionCommand));
-            }
+        invokeAndWait(() -> {
+            final Action action = editor.getActions().get(actionCommand);
+            assertNotNull(action);
+            action.actionPerformed(new ActionEvent(editorComponent, 0, actionCommand));
         });
     }
 
@@ -96,12 +84,9 @@ public class EditorStepdefs {
     public void iEnterTheFilename(final String filename) throws Throwable {
         final File file = new File(filename);
         // TODO Replace with lambda or method reference
-        invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                editor.fileChooser.setSelectedFile(file);
-                editor.fileChooser.approveSelection();
-            }
+        invokeAndWait(() -> {
+            editor.fileChooser.setSelectedFile(file);
+            editor.fileChooser.approveSelection();
         });
     }
 
@@ -121,30 +106,10 @@ public class EditorStepdefs {
                 }
             }
         };
-        // TODO Replace with lambda or method reference
-        final Callable<Boolean> hasFocus = new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return editorComponent.hasFocus();
-            }
-        };
-        // TODO Replace with lambda or method reference
-        final Runnable addFocusListener = new Runnable() {
-            @Override
-            public void run() {
-                editorComponent.addFocusListener(focusAdapter);
-            }
-        };
-        // TODO Replace with lambda or method reference
-        final Runnable removeFocusListener = new Runnable() {
-            @Override
-            public void run() {
-                editorComponent.removeFocusListener(focusAdapter);
-            }
-        };
-        // TODO Replace with lambda or method reference
+        final Callable<Boolean> hasFocus = () -> editorComponent.hasFocus();
+        final Runnable addFocusListener = () -> editorComponent.addFocusListener(focusAdapter);
+        final Runnable removeFocusListener = () -> editorComponent.removeFocusListener(focusAdapter);
         invokeAndWait(addFocusListener);
-        // TODO Replace with lambda or method reference
         if (!callAndWait(hasFocus)) {
             synchronized (monitor) {
                 try {
@@ -153,9 +118,7 @@ public class EditorStepdefs {
                 }
             }
         }
-        // TODO Replace with lambda or method reference
         invokeAndWait(removeFocusListener);
-        // TODO Replace with lambda or method reference
         assertTrue(callAndWait(hasFocus));
     }
 
@@ -186,45 +149,25 @@ public class EditorStepdefs {
 
     private boolean isFileChooserShowing() throws InterruptedException, InvocationTargetException, ExecutionException {
         // TODO Replace with lambda or method reference
-        return callAndWait(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return editor.fileChooser.isShowing();
-            }
-        });
+        return callAndWait(() -> editor.fileChooser.isShowing());
     }
 
     @When("^I set the caret to position (\\d+)[,.]?$")
     public void iSetTheCursorToPosition(final int caretPosition) throws Throwable {
         // TODO Replace with lambda or method reference
-        invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                editorComponent.setCaretPosition(caretPosition);
-            }
-        });
+        invokeAndWait(() -> editorComponent.setCaretPosition(caretPosition));
     }
 
     @When("^I mark from position (\\d+) to position (\\d+),$")
     public void iMarkFromPositionToPosition(final int start, final int end) throws Throwable {
         // TODO Replace with lambda or method reference
-        invokeAndWait(new Runnable() {
-            @Override
-            public void run() {
-                editorComponent.select(start, end);
-            }
-        });
+        invokeAndWait(() -> editorComponent.select(start, end));
     }
 
     @After
     public void closeTheEditor() throws InvocationTargetException, InterruptedException, ExecutionException {
         iWaitForAction("quit");
-        assertFalse(callAndWait(new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return editorComponent.hasFocus();
-            }
-        }));
+        assertFalse(callAndWait(() -> editorComponent.hasFocus()));
         editorComponent = null;
         editor = null;
         System.gc();
